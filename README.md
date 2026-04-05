@@ -8,5 +8,12 @@ We named this project **Megapolis** because a standard terminal is like an empty
 
 This script will download several utilities and install them on your Linux system. Everything works automatically.
 
+with curl
 ```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Yuralitv1982/megapolis/main/install.sh)"
+```
+
+with wget
+```bash
+bash -c "$(wget -qO- https://raw.githubusercontent.com/Yuralitv1982/megapolis/main/install.sh)"
+```
