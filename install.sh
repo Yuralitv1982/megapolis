@@ -58,6 +58,22 @@ else
     # (Atuin/Eza/Yazi logic from previous version remains here)
 fi
 
+# eza (smart install)
+if ! command -v eza &>/dev/null; then
+  echo "📁 Устанавливаем eza..."
+  # try by default use apt
+  if $PKG_MANAGER eza 2>/dev/null; then
+    echo "✅ eza установлена из репозиториев."
+  else
+    # if not in the repository (old Ubuntu), use binary
+    echo "🌐 В репозиториях пусто, качаем свежий бинарник..."
+    wget -qO eza.tar.gz "https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
+    tar -xzf eza.tar.gz
+    $SUDO_CMD mv eza /usr/local/bin/
+    rm -f eza.tar.gz
+  fi
+fi
+
 # 3. Setup Configs
 echo "🏗️ Configuring environment..."
 
