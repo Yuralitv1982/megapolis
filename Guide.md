@@ -1,43 +1,30 @@
-### GUIDE.md
+---
 
-# Инструкция по эксплуатации и Свобода
+### Guide.md
 
+```markdown
+# Operating Manual and Freedom
 
+## 1. Your New Superpowers (How it works)
 
-## 1. Твои новые суперсилы (Как это работает)
+* **`ll`** — View the file list beautifully. This is a shortcut for "list". Now you’ll see them with icons, colors, and sizes.
+* **`z <folder_name>`** — Teleportation. You no longer need to type long paths like `/home/user/projects/my_site`. Just type `z site`, and the system will figure out where you want to jump. It learns from your actions.
+* **`micro <file>`** — Your new editor. Don't be afraid. It’s like Notepad in Windows. The mouse works, text selection works, and it uses familiar shortcuts like **Ctrl + S** (save) and **Ctrl + Q** (exit).
+* **`Ctrl + R`** — Time Machine (Smart History). You’ll never lose a successful command again. Press it and start typing part of a command you wrote yesterday or three days ago, and it will appear instantly.
+* **`yazi`** — File Manager. If you’re tired of commands, just type this. It opens a full-featured file explorer where you can navigate with arrow keys, browse folders, and preview images directly in the terminal.
 
-* **ll** — Посмотреть список файлов. Это сокращение от "list". Но теперь ты увидишь их с иконками, цветами и размером.
+## 2. Safety and Rollback
 
-* **z <имя_папки>** — Телепортация. Тебе больше не нужно писать длинные пути типа `/home/user/projects/my_site`. Просто напиши `z site`, и система сама поймет, куда ты хочешь прыгнуть. Она учится на твоих действиях.
+* **Backups:** Our script doesn't break anything. It doesn't delete your old settings; it carefully renames them to `.bak`.
+* **Timeshift (Your Insurance):** We strongly recommend installing this program. It’s like "Restore Points" in Windows. Take a system snapshot, and you can experiment as much as you want. Messed up? System broken? Roll back in 2 minutes. Use it through the GUI or terminal. This is your total freedom of action.
 
-* **micro <файл>** — Твой новый редактор. Это не страшно. Это как «Блокнот» в Windows. Тут работает мышка, выделение текста и привычные **Ctrl + S** (сохранить) и **Ctrl + Q** (выйти).
+## 3. Recommendations: How Not to Lose Your Mind
 
-* **Ctrl + R** — Машина времени (Умная история). Ты больше никогда не потеряешь удачную команду. Нажми и начни вводить часть команды, которую ты писал вчера или три дня назад, и она сама появится в строке.
+We’ve set up the environment, but if you prefer working in full IDEs, that’s perfectly fine. They will work even better now:
+* **WebStorm / VS Code:** Install them freely; they play very well with our terminal setup.
+* **What if something goes wrong?** If something hangs, press **Ctrl + C**. This is the universal "brake" in Linux. If you have questions or the script throws an error, feel free to post in the GitHub Issues.
 
-* **yazi** — Файловый менеджер. Если устал от команд, просто введи это слово. Откроется полноценный проводник, где можно ходить стрелочками, листать папки и смотреть картинки прямо в терминале.
+## 4. How to Customize Everything (Freedom)
 
-
-
-## 2. Безопасность и Откат
-
-* **Бэкапы:** Наш скрипт ничего не ломает. Он не удаляет твои старые настройки, а бережно переименовывает их в `.bak`.
-
-* **Timeshift (Твоя страховка):** Мы настоятельно рекомендуем поставить эту программу. Это как «Точки восстановления» в Windows. Сделал снимок системы — и можешь ломать её как хочешь. Накосячил? Сломал систему? Откат за 2 минуты. Используй её через графический интерфейс или терминал. Это твоя полная свобода действий.
-
-
-
-## 3. Рекомендации: Как не сойти с ума
-
-Мы настроили среду, но если тебе привычнее работать в полноценных IDE — это абсолютно нормально. Теперь они будут работать еще лучше:
-
-* **WebStorm / VS Code** — Ставь их смело, они отлично дружат с нашим терминалом.
-
-* **Что делать, если всё пошло не так?** Если что-то зависло — жми **Ctrl + C**. Это универсальный «тормоз» в Линуксе. Если появились вопросы или скрипт выдал ошибку — смело пиши нам в Issues на GitHub.
-
-
-
-## 4. Как поменять всё под себя (Свобода)
-
-* **Темы оформления:** Зайди в `~/.config/starship.toml`, чтобы сменить значок ракеты на что угодно другое.
-
-* **Свои команды:** Открой `~/.zshrc`, чтобы добавить свои собственные алиасы (сокращения).
+* **Themes:** Go to `~/.config/starship.toml` to change the rocket icon to anything else.
+* **Your own commands:** Open `~/.zshrc` to add your own aliases (command shortcuts).

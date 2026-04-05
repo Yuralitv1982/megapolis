@@ -1,47 +1,47 @@
 #!/usr/bin/env bash
 
-# Строгий режим: скрипт остановится, если где-то произойдет критическая ошибка
+# Strict mode: script stops if a critical error occurs
 set -e
 
-# --- ГЛОБАЛЬНЫЕ ПЕРЕМЕННЫЕ ---
+# --- GLOBAL VARIABLES ---
 PKG_MANAGER=""
 UPDATE_CMD=""
 SUDO_CMD=""
 
-# --- ФУНКЦИИ ---
+# --- FUNCTIONS ---
 
-# 0. Проверка привилегий пользователя
+# 0. Check user privileges
 check_sudo() {
-  # EUID 0 означает, что скрипт запущен от root
+  # EUID 0 means the script is running as root
   if [ "$EUID" -ne 0 ]; then
     SUDO_CMD="sudo "
   fi
 }
 
-# 1. Определение системы (Ubuntu vs Fedora)
+# 1. Detect OS (Ubuntu vs Fedora)
 detect_os() {
-  echo "🔍 Определяем операционную систему..."
+  echo "🔍 Detecting operating system..."
   if [ -f /etc/os-release ]; then
     source /etc/os-release
     if [[ "$ID" == "fedora" ]]; then
       PKG_MANAGER="${SUDO_CMD}dnf install -y"
       UPDATE_CMD="${SUDO_CMD}dnf check-update || true"
-      echo "✅ Найдена Fedora. Используем DNF."
+      echo "✅ Fedora detected. Using DNF."
     elif [[ "$ID" == "ubuntu" || "$ID" == "debian" || "$ID_LIKE" == *"debian"* ]]; then
       PKG_MANAGER="${SUDO_CMD}apt install -y"
       UPDATE_CMD="${SUDO_CMD}apt update -y"
-      echo "✅ Найдена Ubuntu/Debian. Используем APT."
+      echo "✅ Ubuntu/Debian detected. Using APT."
     else
-      echo "❌ Извини, эта ОС пока не поддерживается."
+      echo "❌ Sorry, this OS is not supported yet."
       exit 1
     fi
   else
-    echo "❌ Файл /etc/os-release не найден."
+    echo "❌ /etc/os-release file not found."
     exit 1
   fi
 }
 
-# 2. Движок модульности (Функция вопросов)
+# 2. Modularity Engine (Question Function)
 ask() {
   local prompt="$1"
   local default="$2"
@@ -55,101 +55,98 @@ ask() {
 
   read -r -p "$prompt" reply
 
-  # Если пользователь просто нажал Enter, используем значение по умолчанию
+  # Use default value if the user just presses Enter
   if [[ -z "$reply" ]]; then
     reply=$default
   fi
 
-  # Проверяем ответ
+  # Check response
   if [[ "$reply" == [Yy]* ]]; then
-    return 0 # True (согласие)
+    return 0 # True (Agreed)
   else
-    return 1 # False (отказ)
+    return 1 # False (Declined)
   fi
 }
 
-# --- ОСНОВНАЯ ЛОГИКА ---
-echo "🚀 Запуск установки профессионального рабочего окружения..."
+# --- MAIN LOGIC ---
+echo "🚀 Launching professional environment setup..."
 
 check_sudo
 detect_os
 
-echo "📦 Обновляем кэш пакетов перед установкой..."
+echo "📦 Updating package cache before installation..."
 eval "$UPDATE_CMD"
 
-# --- МОДУЛЬ 1: CORE ---
-if ask "Установить базовые утилиты разработчика (git, curl, wget, gcc)?" "Y"; then
-  echo "⚙️ Устанавливаем Core..."
+# --- MODULE 1: CORE ---
+if ask "Install basic developer utilities (git, curl, wget, gcc)?" "Y"; then
+  echo "⚙️ Installing Core..."
   $PKG_MANAGER git curl wget gcc
 else
-  echo "⏭️ Пропускаем установку Core-утилит."
+  echo "⏭️ Skipping Core utilities installation."
 fi
 
-echo "🎉 Базовая проверка завершена."
+echo "🎉 Basic check completed."
 
-
-# --- МОДУЛЬ 2: TERMINAL UX ---
+# --- MODULE 2: TERMINAL UX ---
 
 # --- Install Nerd Fonts ---
-echo "📦 Подготовка системы для работы со шрифтами..."
-# Устанавливаем fontconfig, чтобы команда fc-cache появилась в системе
+echo "📦 Preparing system for fonts..."
+# Install fontconfig so fc-cache is available
 $PKG_MANAGER fontconfig
 
 echo "📦 Installing JetBrainsMono Nerd Font for icons..."
 FONT_DIR="$HOME/.local/share/fonts"
 mkdir -p "$FONT_DIR"
 
-# Скачиваем шрифт
+# Download font
 curl -fLo "$FONT_DIR/JetBrainsMonoNerdFont-Regular.ttf" \
     https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/JetBrainsMono/Ligatures/Regular/JetBrainsMonoNerdFont-Regular.ttf
 
-# Теперь fc-cache точно сработает
-echo "🔄 Обновляем кэш шрифтов..."
+# Update font cache
+echo "🔄 Updating font cache..."
 fc-cache -f -v > /dev/null
 
-
-if ask "Установить Terminal UX (Zsh, Starship, fzf, zoxide, eza, yazi, atuin, bat, micro)?" "Y"; then
-  echo "🎨 Устанавливаем Terminal UX..."
+if ask "Install Terminal UX (Zsh, Starship, fzf, zoxide, eza, yazi, atuin, bat, micro)?" "Y"; then
+  echo "🎨 Installing Terminal UX..."
 
   if [[ "$ID" == "fedora" ]]; then
-    # Для Fedora свои названия пакетов (gnupg2)
     $PKG_MANAGER zsh fzf micro unzip gnupg2
-    echo "📦 Установка современных утилит из репозиториев Fedora..."
-    $PKG_MANAGER zoxide eza starship atuin yazi bat || echo "⚠️ Часть пакетов может потребовать COPR."
+    echo "📦 Installing modern utilities from Fedora repositories..."
+    $PKG_MANAGER zoxide eza starship atuin yazi bat || echo "⚠️ Some packages may require COPR."
   else
-    # Для Ubuntu добавляем gnupg и unzip в базовую установку
     $PKG_MANAGER zsh fzf micro unzip gnupg
-    echo "📦 Установка современных утилит для Ubuntu..."
+    echo "📦 Installing modern utilities for Ubuntu..."
 
-    # Zoxide и Bat
+    # Zoxide and Bat
     $PKG_MANAGER zoxide bat
 
-    # Starship (Тихая установка)
+    # Starship (Silent install)
     if ! command -v starship &>/dev/null; then
-      echo "🚀 Устанавливаем Starship..."
+      echo "🚀 Installing Starship..."
       curl -sS https://starship.rs/install.sh | sh -s -- -y
     fi
 
-    # Atuin (ТИХАЯ УСТАНОВКА - качаем бинарник напрямую)
+    # Atuin (Silent install - direct binary download)
     if ! command -v atuin &>/dev/null; then
-      echo "🐢 Устанавливаем Atuin (тихий режим)..."
+      echo "🐢 Installing Atuin..."
       wget -qO atuin.tar.gz "https://github.com/atuinsh/atuin/releases/latest/download/atuin-x86_64-unknown-linux-gnu.tar.gz"
       tar -xzf atuin.tar.gz
       $SUDO_CMD mv atuin-*/atuin /usr/local/bin/
       rm -rf atuin.tar.gz atuin-*/
     fi
-    # eza (ТИХАЯ УСТАНОВКА бинарника с GitHub)
+
+    # eza (Silent install - direct binary download)
     if ! command -v eza &>/dev/null; then
-      echo "📁 Устанавливаем eza (тихий режим)..."
+      echo "📁 Installing eza..."
       wget -qO eza.tar.gz "https://github.com/eza-community/eza/releases/latest/download/eza_x86_64-unknown-linux-gnu.tar.gz"
       tar -xzf eza.tar.gz
       $SUDO_CMD mv eza /usr/local/bin/
       rm -f eza.tar.gz
     fi
 
-    # Yazi (ТИХАЯ УСТАНОВКА бинарника)
+    # Yazi (Silent install)
     if ! command -v yazi &>/dev/null; then
-      echo "📂 Устанавливаем Yazi..."
+      echo "📂 Installing Yazi..."
       wget -qO yazi.zip "https://github.com/sxyazi/yazi/releases/latest/download/yazi-x86_64-unknown-linux-gnu.zip"
       unzip -q yazi.zip
       $SUDO_CMD mv yazi-*/yazi yazi-*/ya /usr/local/bin/
@@ -157,53 +154,54 @@ if ask "Установить Terminal UX (Zsh, Starship, fzf, zoxide, eza, yazi,
     fi
   fi
 else
-  echo "⏭️ Пропускаем Terminal UX."
+  echo "⏭️ Skipping Terminal UX."
 fi
-# --- МОДУЛЬ 3: КОНФИГУРАЦИЯ (СБОРКА МЕГАПОЛИСА) ---
-if ask "Сгенерировать стартовые конфиги и Курс выживания?" "Y"; then
-  echo "🏗️ Собираем рабочее окружение..."
+
+# --- MODULE 3: CONFIGURATION ---
+if ask "Generate startup configs and Survival Guide?" "Y"; then
+  echo "🏗️ Assembling work environment..."
 
   export EDITOR=micro
 
-  # 1. Создаем Руководство по выживанию
-  echo "📖 Пишем книгу выживания..."
+  # 1. Create Survival Guide
+  echo "📖 Writing survival guide..."
   cat <<'EOF' >~/.survival_guide.md
-# 🏙️ ДОБРО ПОЖАЛОВАТЬ В МЕГАПОЛИС
+# 🏙️ WELCOME TO MEGAPOLIS
 
-Твой терминал прокачан и готов к работе. Забудь про страх черного экрана.
+Your terminal is upgraded and ready to work. Forget the fear of the black screen.
 
-## 🆘 ПЕРВАЯ ПОМОЩЬ (Если забыл команду)
-- Введи `help <команда>` (например, `help ls`). Это вызовет **tldr** — простую шпаргалку с примерами, без лишней воды.
-- Если утилита зависла или вывела кучу непонятного текста — жми **Ctrl + C** (это прервет процесс).
+## 🆘 FIRST AID (If you forgot a command)
+- Type `help <command>` (e.g., `help ls`). This calls **tldr** — a simple cheat sheet with examples, no fluff.
+- If a utility hangs or outputs confusing text — press **Ctrl + C** (this kills the process).
 
-## 🚀 ГЛАВНЫЕ КОМАНДЫ-ЗАМЕНИТЕЛИ
-- `ls` или `ll` — Красивый список файлов (заменяет старый ls).
-- `tree` — Показать папки в виде дерева.
-- `cd <папка>` — Умная навигация. Можно писать часть слова, он сам угадает путь!
-- `cat <файл>` — Читать текст файла с подсветкой синтаксиса.
-- `micro <файл>` — Открыть простой и понятный редактор (работает мышка!).
+## 🚀 MAIN COMMAND REPLACEMENTS
+- `ls` or `ll` — Beautiful file list (replaces old ls).
+- `tree` — Show folders as a tree.
+- `cd <folder>` — Smart navigation. You can type part of the word, it will guess the path!
+- `cat <file>` — Read file text with syntax highlighting.
+- `micro <file>` — Open a simple and intuitive editor (mouse works!).
 
-## ⌨️ ГОРЯЧИЕ КЛАВИШИ
-- **Ctrl + Shift + V** — Вставить текст (В терминале просто Ctrl+V не работает!).
-- **Ctrl + Shift + C** — Скопировать текст.
-- **Ctrl + R** — Поиск по истории команд (Магия Atuin).
-- **Ctrl + T** — Найти файл в текущей папке (Магия fzf).
+## ⌨️ HOTKEYS
+- **Ctrl + Shift + V** — Paste text (Normal Ctrl+V doesn't work in terminal!).
+- **Ctrl + Shift + C** — Copy text.
+- **Ctrl + R** — Search command history (Atuin Magic).
+- **Ctrl + T** — Find a file in current folder (fzf Magic).
 
-## ⚠️ ОСТОРОЖНО: Кнопка F2
-Если ты случайно нажал **F2** (особенно в Zellij или других мультиплексорах) и терминал перестал печатать буквы — не паникуй! Скорее всего, ты включил режим "переименования окна" или "блокировки". Просто нажми **Enter** или **Esc**, чтобы выйти из этого режима.
+## ⚠️ CAUTION: F2 Key
+If you accidentally press **F2** and the terminal stops typing — don't panic! You likely toggled a "rename" or "lock" mode. Just press **Enter** or **Esc** to exit.
 
-## 🛠️ КАК ИЗМЕНИТЬ НАСТРОЙКИ?
-Твои алиасы (сокращения команд) лежат в файле `~/.aliases`. 
-Введи `micro ~/.aliases`, добавь свои команды, сохрани (**Ctrl+S**) и закрой (**Ctrl+Q**).
+## 🛠️ HOW TO CHANGE SETTINGS?
+Your aliases (command shortcuts) are in `~/.aliases`.
+Type `micro ~/.aliases`, add your commands, save (**Ctrl+S**), and close (**Ctrl+Q**).
 
 ---
-*Чтобы снова прочитать эту шпаргалку, просто введи команду `guide`.*
+*To read this guide again, just type the command `guide`.*
 EOF
 
-  # 2. Создаем файл алиасов (учитываем разницу Ubuntu и Fedora для bat)
-  echo "🔗 Прописываем алиасы..."
+  # 2. Create Aliases file
+  echo "🔗 Setting up aliases..."
   cat <<EOF >~/.aliases
-# Базовые перехваты
+# Basic Overrides
 alias ls='eza --icons=always --color=always --group-directories-first'
 alias ll='eza -la --icons=always --color=always --group-directories-first'
 alias tree='eza --tree --icons=always'
@@ -211,27 +209,27 @@ alias cd='z'
 alias find='fd'
 EOF
 
-  # Дописываем специфичный алиас для bat
+  # Handle bat/batcat naming difference
   if [[ "$ID" == "fedora" ]]; then
     echo "alias cat='bat'" >>~/.aliases
   else
     echo "alias cat='batcat'" >>~/.aliases
   fi
 
-  # Дописываем остальные алиасы
+  # Remaining aliases
   cat <<'EOF' >>~/.aliases
-# Удобные сокращения
+# Convenient shortcuts
 alias c='clear'
 alias q='exit'
 alias mkdir='mkdir -p'
 alias guide='cat ~/.survival_guide.md'
 
-# Шпаргалка tldr
+# TLDR cheat sheet
 alias help='tldr'
 EOF
 
-  # 3. Создаем чистый .zshrc
-  echo "📝 Генерируем .zshrc..."
+  # 3. Create clean .zshrc
+  echo "📝 Generating .zshrc..."
   cat <<'EOF' >~/.zshrc
 export EDITOR=micro
 
@@ -243,18 +241,18 @@ eval "$(starship init zsh)"
 eval "$(zoxide init zsh)"
 eval "$(atuin init zsh --disable-up-arrow)"
 
-# Выводим руководство при первом входе (можно закомментировать позже)
+# Show guide on first login
 guide
 EOF
 
-  # Устанавливаем tldr
-  echo "📚 Устанавливаем tldr-шпаргалку..."
+  # Install tldr
+  echo "📚 Installing tldr..."
   $PKG_MANAGER tldr unzip
   mkdir -p ~/.local/share/tldr
   tldr --update || true
 
-  # Меняем оболочку
-  echo "🔄 Назначаем Zsh оболочкой по умолчанию..."
+  # Change Shell
+  echo "🔄 Setting Zsh as default shell..."
   if [ "$EUID" -ne 0 ]; then
     $SUDO_CMD chsh -s $(which zsh) $(whoami)
   else
@@ -262,7 +260,7 @@ EOF
   fi
 
 else
-  echo "⏭️ Пропускаем конфигурацию."
+  echo "⏭️ Skipping configuration."
 fi
 
-echo -e "\n🎉 \e[1;32mУстановка завершена! Перезайди в терминал или напиши 'zsh'.\e[0m"
+echo -e "\n🎉 \e[1;32mInstallation complete! Restart your terminal or type 'zsh'.\e[0m"

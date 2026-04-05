@@ -1,24 +1,12 @@
-# Megapolis — Твой профессиональный терминал за 2 минуты.
+# Megapolis — Your professional terminal in 2 minutes.
 
-## Почему Megapolis? (Коротко и честно):
+## Why Megapolis? (Short and honest):
 
-    Мы назвали этот проект Megapolis, потому что обычный терминал — это пустая темная комната. Мы превращаем его в современную инфраструктуру: со скоростными дорогами (zoxide), автоматикой (atuin) и яркими огнями (starship). Это город, который работает на тебя.
+We named this project **Megapolis** because a standard terminal is like an empty dark room. We turn it into a modern infrastructure: with high-speed roads (`zoxide`), automation (`atuin`), and bright lights (`starship`). It’s a city that works for you.
 
-«Хватит гуглить каждую команду. Мы собрали инструменты, которые используют Senior-инженеры, и настроили их для тебя».
+"Stop Googling every command. We’ve gathered the tools Senior engineers use and configured them specifically for you."
 
-Это скрипт  он скачает несколько утилит и установит на твой линукс, все работает автоматически.
+This script will download several utilities and install them on your Linux system. Everything works automatically.
 
-```code
+```bash
 bash -c "$(curl -fsSL https://raw.githubusercontent.com/Yuralitv1982/megapolis/main/install.sh)"
-```
-
-Инструкция:
-
-    Скопируй: Ctrl + C.
-
-    Вставь в терминал: Ctrl + Shift + V.
-
-    Нажми Enter и 3 раза подтверди установку (y).
-
-
-Что дальше? «Читай подробный GUIDE.md, чтобы узнать, как пользоваться всеми суперсилами».
