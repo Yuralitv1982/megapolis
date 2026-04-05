@@ -91,17 +91,22 @@ echo "🎉 Базовая проверка завершена."
 # --- МОДУЛЬ 2: TERMINAL UX ---
 
 # --- Install Nerd Fonts ---
+echo "📦 Подготовка системы для работы со шрифтами..."
+# Устанавливаем fontconfig, чтобы команда fc-cache появилась в системе
+$PKG_MANAGER fontconfig
+
 echo "📦 Installing JetBrainsMono Nerd Font for icons..."
 FONT_DIR="$HOME/.local/share/fonts"
 mkdir -p "$FONT_DIR"
 
-# Скачиваем только нужный начертание (Regular), чтобы не тянуть 500Мб архивов
+# Скачиваем шрифт
 curl -fLo "$FONT_DIR/JetBrainsMonoNerdFont-Regular.ttf" \
     https://github.com/ryanoasis/nerd-fonts/raw/HEAD/patched-fonts/JetBrainsMono/Ligatures/Regular/JetBrainsMonoNerdFont-Regular.ttf
 
-# Обновляем кэш шрифтов в системе
+# Теперь fc-cache точно сработает
+echo "🔄 Обновляем кэш шрифтов..."
 fc-cache -f -v > /dev/null
-echo "✅ Font installed. Remember to select 'JetBrainsMono Nerd Font' in your terminal settings!"
+
 
 if ask "Установить Terminal UX (Zsh, Starship, fzf, zoxide, eza, yazi, atuin, bat, micro)?" "Y"; then
   echo "🎨 Устанавливаем Terminal UX..."
